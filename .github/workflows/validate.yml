@@ -1,0 +1,31 @@
+name: Validate Code
+
+on: pull_request
+
+jobs:
+  validate:
+    runs-on: ubuntu-latest
+
+    steps:
+      - uses: actions/checkout@v3
+
+      - name: Use Node
+        uses: actions/setup-node@v3
+        with:
+          node-version: 16.x
+          cache: 'npm'
+
+      - name: Reconfigure git to use HTTP authentication
+        run: >
+          git config --global url."https://github.com/".insteadOf ssh://git@github.com/
+
+      - name: install dependencies
+        run: |
+          npm -v
+          npm install -g npm@7
+          npm ci
+
+      - name: build
+        run: npm run build
+        env:
+          CI: true
